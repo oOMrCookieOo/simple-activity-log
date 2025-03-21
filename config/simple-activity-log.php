@@ -10,7 +10,7 @@ return [
     'log_name' => 'model_log',
     'causer_identifier' => 'email',
     "registered" => [
-        \App\Models\MealPool::class
+       // \App\Models\User::class
     ],
 
 ];
