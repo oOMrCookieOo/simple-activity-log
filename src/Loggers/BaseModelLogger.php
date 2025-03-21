@@ -2,7 +2,6 @@
 
 namespace Mrcookie\SimpleActivityLog\Loggers;
 
-
 use Illuminate\Auth\GenericUser;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +12,7 @@ use Spatie\Activitylog\ActivityLogStatus;
 
 abstract class BaseModelLogger
 {
-    protected abstract function getLogName(): string;
+    abstract protected function getLogName(): string;
 
     protected function getCauserIdentifier(?Authenticatable $user): string
     {
@@ -21,16 +20,15 @@ abstract class BaseModelLogger
             return 'Anonymous';
         }
 
-        return $user->{config('simple-activity-log.causer_identifier','name')} ?? $user->getAuthIdentifier();
+        return $user->{config('simple-activity-log.causer_identifier', 'name')} ?? $user->getAuthIdentifier();
     }
 
-    protected function getModelName(Model $model):string
+    protected function getModelName(Model $model): string
     {
         return Str::of(class_basename($model))->headline();
     }
 
-
-    protected function activityLogger(string $logName = null): ActivityLogger
+    protected function activityLogger(?string $logName = null): ActivityLogger
     {
         $defaultLogName = $this->getLogName();
 
@@ -43,7 +41,7 @@ abstract class BaseModelLogger
 
     protected function getLoggableAttributes(Model $model, mixed $values = []): array
     {
-        if (!is_array($values)) {
+        if (! is_array($values)) {
             return [];
         }
 
@@ -60,10 +58,10 @@ abstract class BaseModelLogger
 
     protected function log(Model $model, string $event, ?string $description = null, mixed $attributes = null): void
     {
-        $description ??= $this->getModelName($model) . ' ' . $event;
+        $description ??= $this->getModelName($model).' '.$event;
 
         if (auth()->check()) {
-            $description .= ' by ' . $this->getCauserIdentifier(auth()->user());
+            $description .= ' by '.$this->getCauserIdentifier(auth()->user());
         }
 
         $this->activityLogger()

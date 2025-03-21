@@ -2,11 +2,8 @@
 
 namespace Mrcookie\SimpleActivityLog;
 
-use Illuminate\Container\Attributes\Log;
-use Illuminate\Support\Str;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Mrcookie\SimpleActivityLog\Commands\SimpleActivityLogCommand;
 
 class SimpleActivityLogServiceProvider extends PackageServiceProvider
 {
@@ -21,7 +18,6 @@ class SimpleActivityLogServiceProvider extends PackageServiceProvider
             ->name('simple-activity-log')
             ->hasConfigFile();
     }
-
 
     public function packageBooted(): void
     {

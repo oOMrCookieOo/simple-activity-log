@@ -2,9 +2,8 @@
 
 namespace Mrcookie\SimpleActivityLog\Enums;
 
-enum ObserverActionsEnum : string
+enum ObserverActionsEnum: string
 {
-
     case CREATED = 'created';
     case UPDATED = 'updated';
     case DELETED = 'deleted';
