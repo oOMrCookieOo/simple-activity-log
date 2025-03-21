@@ -82,6 +82,7 @@ abstract class BaseModelLogger
     {
         $changes = $model->getChanges();
 
+        //For modes that have a remember_token field
         if (count($changes) === 1 && array_key_exists('remember_token', $changes)) {
             return;
         }
