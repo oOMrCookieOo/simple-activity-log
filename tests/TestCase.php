@@ -3,8 +3,8 @@
 namespace Mrcookie\SimpleActivityLog\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Orchestra\Testbench\TestCase as Orchestra;
 use Mrcookie\SimpleActivityLog\SimpleActivityLogServiceProvider;
+use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {
