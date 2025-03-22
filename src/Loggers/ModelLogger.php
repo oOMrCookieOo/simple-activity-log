@@ -6,6 +6,6 @@ class ModelLogger extends BaseModelLogger
 {
     protected function getLogName(): string
     {
-        return config('simple-activity-log.log_name');
+        return config('simple-activity-log.default_log_name');
     }
 }

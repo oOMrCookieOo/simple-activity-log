@@ -13,7 +13,48 @@ use Spatie\Activitylog\ActivityLogStatus;
 
 abstract class BaseModelLogger
 {
-    protected abstract function getLogName(): string;
+    public function created(Model $model): void
+    {
+        $this->log($model, ObserverActionsEnum::CREATED->value, attributes: $model->getAttributes());
+    }
+
+    protected function log(Model $model, string $event, ?string $description = null, mixed $attributes = null): void
+    {
+        if (!$this->shouldLogEvent($model, $event)) {
+            return;
+        }
+
+        if (is_null($description)) {
+            $description = $this->getModelName($model) . ' ' . $event;
+        }
+
+        if (auth()->check()) {
+            $description .= ' by ' . $this->getCauserIdentifier(auth()->user());
+        }
+
+        $this->activityLogger()
+            ->event($event)
+            ->performedOn($model)
+            ->withProperties($this->getLoggableAttributes($model, $attributes))
+            ->log($description);
+    }
+
+    protected function shouldLogEvent(Model $model, string $event): bool
+    {
+        $modelClass = get_class($model);
+        $eventsToLog = config("simple-activity-log.events.{$modelClass}", []);
+
+        if (empty($eventsToLog)) {
+            return true;
+        }
+
+        return in_array($event, $eventsToLog);
+    }
+
+    protected function getModelName(Model $model): string
+    {
+        return Str::of(class_basename($model))->headline();
+    }
 
     protected function getCauserIdentifier(?Authenticatable $user): string
     {
@@ -21,14 +62,8 @@ abstract class BaseModelLogger
             return 'Anonymous';
         }
 
-        return $user->{config('simple-activity-log.causer_identifier','name')} ?? $user->getAuthIdentifier();
+        return $user->{config('simple-activity-log.causer_identifier', 'name')} ?? $user->getAuthIdentifier();
     }
-
-    protected function getModelName(Model $model):string
-    {
-        return Str::of(class_basename($model))->headline();
-    }
-
 
     protected function activityLogger(string $logName = null): ActivityLogger
     {
@@ -40,6 +75,8 @@ abstract class BaseModelLogger
             ->useLog($logName ?? $defaultLogName)
             ->setLogStatus($logStatus);
     }
+
+    protected abstract function getLogName(): string;
 
     protected function getLoggableAttributes(Model $model, mixed $values = []): array
     {
@@ -56,26 +93,6 @@ abstract class BaseModelLogger
         }
 
         return $values;
-    }
-
-    protected function log(Model $model, string $event, ?string $description = null, mixed $attributes = null): void
-    {
-        $description ??= $this->getModelName($model) . ' ' . $event;
-
-        if (auth()->check()) {
-            $description .= ' by ' . $this->getCauserIdentifier(auth()->user());
-        }
-
-        $this->activityLogger()
-            ->event($event)
-            ->performedOn($model)
-            ->withProperties($this->getLoggableAttributes($model, $attributes))
-            ->log($description);
-    }
-
-    public function created(Model $model): void
-    {
-        $this->log($model, ObserverActionsEnum::CREATED->value, attributes: $model->getAttributes());
     }
 
     public function updated(Model $model): void
