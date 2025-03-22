@@ -2,7 +2,6 @@
 
 namespace Mrcookie\SimpleActivityLog\Loggers;
 
-
 use Illuminate\Auth\GenericUser;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
@@ -20,16 +19,16 @@ abstract class BaseModelLogger
 
     protected function log(Model $model, string $event, ?string $description = null, mixed $attributes = null): void
     {
-        if (!$this->shouldLogEvent($model, $event)) {
+        if (! $this->shouldLogEvent($model, $event)) {
             return;
         }
 
         if (is_null($description)) {
-            $description = $this->getModelName($model) . ' ' . $event;
+            $description = $this->getModelName($model).' '.$event;
         }
 
         if (auth()->check()) {
-            $description .= ' by ' . $this->getCauserIdentifier(auth()->user());
+            $description .= ' by '.$this->getCauserIdentifier(auth()->user());
         }
 
         $this->activityLogger()
@@ -65,7 +64,7 @@ abstract class BaseModelLogger
         return $user->{config('simple-activity-log.causer_identifier', 'name')} ?? $user->getAuthIdentifier();
     }
 
-    protected function activityLogger(string $logName = null): ActivityLogger
+    protected function activityLogger(?string $logName = null): ActivityLogger
     {
         $defaultLogName = $this->getLogName();
 
@@ -76,11 +75,11 @@ abstract class BaseModelLogger
             ->setLogStatus($logStatus);
     }
 
-    protected abstract function getLogName(): string;
+    abstract protected function getLogName(): string;
 
     protected function getLoggableAttributes(Model $model, mixed $values = []): array
     {
-        if (!is_array($values)) {
+        if (! is_array($values)) {
             return [];
         }
 
@@ -99,7 +98,7 @@ abstract class BaseModelLogger
     {
         $changes = $model->getChanges();
 
-        //For modes that have a remember_token field
+        // For modes that have a remember_token field
         if (count($changes) === 1 && array_key_exists('remember_token', $changes)) {
             return;
         }
