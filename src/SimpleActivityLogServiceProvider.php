@@ -42,7 +42,7 @@ class SimpleActivityLogServiceProvider extends PackageServiceProvider
         try {
             $loggerClass = config('simple-activity-log-2.logger');
 
-            if (!class_exists($loggerClass)) {
+            if (! class_exists($loggerClass)) {
                 throw new \Exception("Logger class {$loggerClass} does not exist.");
             }
 

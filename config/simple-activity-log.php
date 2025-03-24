@@ -15,7 +15,6 @@ return [
     |
     */
 
-
     /*
     |--------------------------------------------------------------------------
     | Enable/Disable Logging
@@ -37,7 +36,7 @@ return [
      |
      */
     'registered' => [
-        //\App\Models\User::class,
+        // \App\Models\User::class,
     ],
 
     /*
@@ -91,8 +90,7 @@ return [
         // Model-specific events
         // \App\Models\User::class => [
         // ObserverActionsEnum::CREATED->value,
-        //ObserverActionsEnum::UPDATED->value,
+        // ObserverActionsEnum::UPDATED->value,
         //  ],
     ],
 ];
-
