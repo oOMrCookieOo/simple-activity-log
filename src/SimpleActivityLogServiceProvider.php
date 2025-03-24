@@ -24,7 +24,7 @@ class SimpleActivityLogServiceProvider extends PackageServiceProvider
                     ->startWith(function (InstallCommand $installCommand) {
                         $installCommand->call('vendor:publish', [
                             '--provider' => "Spatie\Activitylog\ActivitylogServiceProvider",
-                            '--tag' => "activitylog-migrations"
+                            '--tag' => 'activitylog-migrations',
                         ]);
                     });
             });
