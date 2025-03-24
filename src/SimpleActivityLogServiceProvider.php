@@ -2,6 +2,7 @@
 
 namespace Mrcookie\SimpleActivityLog;
 
+use Illuminate\Support\Facades\Log;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -26,6 +27,10 @@ class SimpleActivityLogServiceProvider extends PackageServiceProvider
                             '--provider' => "Spatie\Activitylog\ActivitylogServiceProvider",
                             '--tag' => 'activitylog-migrations',
                         ]);
+                    })->endWith(function (InstallCommand $installCommand) {
+                        $installCommand->info('');
+                        $installCommand->info('Please run "php artisan migrate" to create the activity log tables');
+                        $installCommand->info('Don\'t forget to register your models in the config file!');
                     });
             });
     }
@@ -34,10 +39,22 @@ class SimpleActivityLogServiceProvider extends PackageServiceProvider
     {
         parent::packageBooted();
 
-        if (config('simple-activity-log.enabled', true) && ! empty(config('simple-activity-log.registered'))) {
-            foreach (config('simple-activity-log.registered', []) as $model) {
-                $model::observe(config('simple-activity-log.logger'));
+        try {
+            $loggerClass = config('simple-activity-log-2.logger');
+
+            if (!class_exists($loggerClass)) {
+                throw new \Exception("Logger class {$loggerClass} does not exist.");
             }
+
+            foreach (config('simple-activity-log-2.registered', []) as $modelClass) {
+                if (class_exists($modelClass)) {
+                    $modelClass::observe($loggerClass);
+                } else {
+                    Log::warning("SimpleActivityLog2: Model {$modelClass} does not exist.");
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error("SimpleActivityLog2: {$e->getMessage()}");
         }
     }
 }
