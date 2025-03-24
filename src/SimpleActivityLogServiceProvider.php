@@ -2,6 +2,7 @@
 
 namespace Mrcookie\SimpleActivityLog;
 
+use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -16,7 +17,17 @@ class SimpleActivityLogServiceProvider extends PackageServiceProvider
          */
         $package
             ->name('simple-activity-log')
-            ->hasConfigFile();
+            ->hasConfigFile()
+            ->hasInstallCommand(function (InstallCommand $installCommand) {
+                $installCommand
+                    ->publishConfigFile()
+                    ->startWith(function (InstallCommand $installCommand) {
+                        $installCommand->call('vendor:publish', [
+                            '--provider' => "Spatie\Activitylog\ActivitylogServiceProvider",
+                            '--tag' => "activitylog-migrations"
+                        ]);
+                    });
+            });
     }
 
     public function packageBooted(): void
